@@ -1,15 +1,11 @@
-﻿name: Auto Publish Videos - Woolly Roasts
+name: Auto Publish
 
 on:
   schedule:
-    # Run 3 times a day at:
-    # - 8:00 AM UTC
-    # - 4:00 PM UTC
-    # - 12:00 AM UTC
     - cron: '0 5 * * *'
     - cron: '0 13 * * *'
     - cron: '0 21 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,146 +13,52 @@ permissions:
 jobs:
   publish-videos:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # Prevent hanging
-    
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-          cache: 'pip'  # Cache pip dependencies for faster runs
-      
+          cache: 'pip'
       - name: Install FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
-      - name: Check required secrets
-        run: |
-          echo "Checking required environment variables..."
-          echo ""
-          echo "=== CRITICAL SECRETS (Required) ==="
-          critical_secrets=(
-            "POLLINATIONS_API_KEY"
-          )
-
-          critical_missing=0
-          for secret in "${critical_secrets[@]}"; do
-            if [ -z "${!secret}" ]; then
-              echo "âŒ Missing: $secret"
-              critical_missing=1
-            else
-              echo "âœ… Found: $secret"
-            fi
-          done
-
-          echo ""
-          echo "=== OPTIONAL SECRETS (Will skip if missing) ==="
-          optional_secrets=(
-            "DROPBOX_APP_KEY"
-            "DROPBOX_APP_SECRET"
-            "DROPBOX_REFRESH_TOKEN"
-            "INSTAGRAM_ACCESS_TOKEN"
-            "INSTAGRAM_ACCOUNT_ID"
-            "FACEBOOK_ACCESS_TOKEN"
-            "FACEBOOK_PAGE_ID"
-            "THREADS_ACCESS_TOKEN"
-            "THREADS_USER_ID"
-          )
-
-          for secret in "${optional_secrets[@]}"; do
-            if [ -z "${!secret}" ]; then
-              echo "âš ï¸  Optional (not set): $secret"
-            else
-              echo "âœ… Found: $secret"
-            fi
-          done
-
-          echo ""
-          if [ $critical_missing -eq 1 ]; then
-            echo "âŒ Critical secrets are missing! Pipeline cannot continue."
-            exit 1
-          fi
-
-          echo "âœ… Critical secrets present. Continuing with available platforms..."
+      - name: Run pipeline
         env:
-          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
-          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
-          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
-          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
-          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
-          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
-          FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
-          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
-          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
-      
-      - name: Run automation pipeline
-        env:
-          # Google Drive
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
-
-          # Instagram
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
           INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
-
-          # Facebook
           FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-          # Threads
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
-
-          # YouTube (optional)
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
-
-          # AI Caption
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
           AI_MODEL: openai
         run: |
-          echo "Starting automation pipeline..."
-          echo "Google Drive Folder: $GOOGLE_DRIVE_FOLDER_ID"
-          echo "Service Account Key: ${GOOGLE_SERVICE_ACCOUNT_KEY:0:20}..."
+          echo "Starting pipeline..."
           python auto_pipeline.py
           exit_code=$?
-
-          if [ $exit_code -ne 0 ]; then
-            echo "âŒ Pipeline failed with exit code $exit_code"
-            exit $exit_code
-          fi
-
-          echo "âœ… Pipeline completed successfully"
-      
-      - name: Commit published videos log
+          if [ $exit_code -ne 0 ]; then echo "Failed"; exit $exit_code; fi
+          echo "Done"
+      - name: Commit log
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
-          # Add only the log file (not large video files)
           git add published_videos.json 2>/dev/null || true
-          
-          # Only commit if there are changes
           if ! git diff --staged --quiet; then
             git commit -m "Update published videos log [skip ci]"
             git pull --rebase
             git push
-            echo "âœ… Committed and pushed published_videos.json"
-          else
-            echo "â„¹ï¸ No changes to commit"
           fi
-
-
