@@ -174,5 +174,21 @@
             },
             "recycled": true
         }
+    },
+    {
+        "video_name": "grok-video-ff1d1800-e44e-4b80-b399-d97e8e2c1c77_subtitled.mp4",
+        "metadata": {
+            "title": "This Savage Sheep Just Roasted Someone So Hard You Can Hear the Wool Sing",
+            "description": "I swear, I thought I was ready for a normal roast\u2026 then this wool-powered menace showed up and absolutely demolished a human like it owed him money. The jokes are sharp, the attitude is feral, and the timing is so brutal I had to pause just to recover my dignity. Like if this sheep ended you! Comment who to roast next! Follow Woolly Roasts! and let\u2019s see who the next brave soul is\u2026 assuming they survive.",
+            "success_flags": {
+                "instagram_reel": false,
+                "instagram_story": false,
+                "facebook_reel": true,
+                "facebook_story": true,
+                "threads": false,
+                "youtube": false
+            },
+            "recycled": true
+        }
     }
 ]
