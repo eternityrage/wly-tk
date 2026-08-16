@@ -478,5 +478,21 @@
             },
             "recycled": true
         }
+    },
+    {
+        "video_name": "grok-video-ff1d1800-e44e-4b80-b399-d97e8e2c1c77_subtitled.mp4",
+        "metadata": {
+            "title": "This Savage Sheep Just Roasted Someone So Hard They Need a Wool Blanket (Woolly Roasts #1)",
+            "description": "As a comedy fan, I\u2019m honestly amazed\u2014this sheep doesn\u2019t just roast\u2026 it DEMOLISHES. The wool is soft, the insults are feral, and the jokes land like a surprise jump-scare for your ego. If you\u2019ve ever doubted a sheep could be this savage, congratulations, you\u2019re wrong and we\u2019re laughing. Like if this sheep ended you! Comment who to roast next! Follow Woolly Roasts!",
+            "success_flags": {
+                "instagram_reel": false,
+                "instagram_story": false,
+                "facebook_reel": true,
+                "facebook_story": true,
+                "threads": false,
+                "youtube": false
+            },
+            "recycled": true
+        }
     }
 ]
