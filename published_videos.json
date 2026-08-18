@@ -590,5 +590,21 @@
             },
             "recycled": false
         }
+    },
+    {
+        "video_name": "grok-video-ff1d1800-e44e-4b80-b399-d97e8e2c1c77 (1)_subtitled.mp4",
+        "metadata": {
+            "title": "The Most Savage Sheep Roast Compilation Ever",
+            "description": "When your sheep friend starts roasting everyone at the party, you know it's going to be a wild night. This little woolly comedian has been holding back these comebacks for way too long. The best part? The complete lack of remorse afterwards. Just a casual 'baa' and back to grazing like they didn't just emotionally devastate someone.",
+            "success_flags": {
+                "instagram_reel": false,
+                "instagram_story": false,
+                "facebook_reel": true,
+                "facebook_story": true,
+                "threads": false,
+                "youtube": false
+            },
+            "recycled": true
+        }
     }
 ]
